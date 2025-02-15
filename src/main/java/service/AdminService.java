@@ -12,6 +12,10 @@ public class AdminService {
     @Autowired
     private AdminRepo adminRepo;
 
+    public void createAdmin(Admin admin){
+        adminRepo.save(admin);
+    }
+
     public List<Admin> getAllAdmin(){
         return adminRepo.findAll();
     }
