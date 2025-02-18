@@ -40,4 +40,8 @@ public class UserService {
         return false;
     }
 
+    public User findUserByEmail(String email){
+        return userRepo.findByEmail(email);
+    }
+
 }

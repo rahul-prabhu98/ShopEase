@@ -34,4 +34,7 @@ public class ProductService {
         productRepo.deleteById(id);
     }
 
+    public Product findProductByName(String name){
+        return productRepo.findByName(name);
+    }
 }

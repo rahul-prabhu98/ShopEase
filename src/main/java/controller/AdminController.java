@@ -1,6 +1,9 @@
 package controller;
 
 import entity.Admin;
+import entity.Order;
+import entity.Product;
+import entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
@@ -10,6 +13,8 @@ import service.AdminService;
 import service.OrderService;
 import service.ProductService;
 import service.UserService;
+
+import java.util.Date;
 
 @Controller
 public class AdminController {
@@ -22,6 +27,7 @@ public class AdminController {
     private OrderService orderService;
     @Autowired
     private ProductService productService;
+    private User user;
 
     @GetMapping("/verify/credentials")
     public String verifyCredentials(@ModelAttribute("admin")Admin admin, Model model){
@@ -58,7 +64,7 @@ public class AdminController {
     public String updateAdmin(@PathVariable Long id, Model model){
         model.addAttribute("admin", adminService.getAdminById(id));
 
-        return "UpdateAdmin";
+        return "UpdateUser";
     }
 
     @PostMapping("/update/admin")
@@ -71,5 +77,42 @@ public class AdminController {
     public String deleteAdmin(@PathVariable Long id){
         adminService.deleteAdmin(id);
         return "/admin/home";
+    }
+
+    @GetMapping("/user/login")
+    public String userLogin(User user, Model model){
+        if(userService.verifyCredentials(user.getEmail(), user.getPassword())){
+            user = userService.findUserByEmail(user.getEmail());
+            model.addAttribute("orderList", orderService.findOrdersByUser(user));
+            return "ProductPage";
+        }
+
+        model.addAttribute("error","Invalid email or password");
+        return "Login";
+    }
+
+    @GetMapping("/place/order")
+    public String placeOrder(Order order, Model model) {
+        double totalAmount = order.getPrice() * order.getQuantity();
+        order.setAmount(totalAmount);
+        order.setUser(user);
+        order.setDate(new Date());
+
+        orderService.createOrder(order);
+        model.addAttribute("amount", totalAmount);
+        return "OrderStatus";
+    }
+
+    @GetMapping("/product/search")
+    public String productSearch(String name, Model model){
+        Product product = productService.findProductByName(name);
+        if(product != null){
+            model.addAttribute("orderList", orderService.findOrdersByUser(user));
+            model.addAttribute("product", product);
+            return "ProductPage";
+        }
+        model.addAttribute("error", "Sorry! Product was not found");
+        model.addAttribute("orderList", orderService.findOrdersByUser(user));
+        return "ProductPage";
     }
 }
