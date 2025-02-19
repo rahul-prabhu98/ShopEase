@@ -1,10 +1,11 @@
 package controller;
 
-import entity.Admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import entity.Admin;
 import service.ProductService;
 
 @Controller
@@ -13,7 +14,7 @@ public class HomeController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/home")
+    @GetMapping({"/","/home"})
     public String homePage(){
         return "HomePage";
     }
@@ -24,7 +25,7 @@ public class HomeController {
         return "ProductPage";
     }
 
-    @GetMapping("/contact")
+    @GetMapping("/contactUs")
     public String contactPage(){
         return "ContactPage";
     }
